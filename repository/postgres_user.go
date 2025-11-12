@@ -43,3 +43,65 @@ func (r *PostgresUserRepository) CreateUser(ctx context.Context, user models.Use
 
     return user, nil
 }
+
+func (r *PostgresUserRepository) GetUserByUsername(ctx context.Context, username string) (models.User, error) {
+    var user models.User
+
+    db, err := sql.Open("pgx", r.connString)
+    fmt.Println("In get user by username======================")
+    fmt.Println(r.connString)
+    fmt.Println("====================================")
+    if err != nil {
+      return user, fmt.Errorf("failed to open database: %w", err)
+    }
+    defer db.Close() // Ensure the connection pool is closed when the function exits
+
+    selectSql := "SELECT * from users where username=$1";
+
+    err = db.QueryRowContext(ctx, selectSql, username).Scan(
+      &user.ID,
+      &user.Username,
+      &user.Email,
+      &user.Password,
+      &user.IsAdmin,
+    )
+    if err != nil {
+      fmt.Println("===========================================")
+      fmt.Println("Query error")
+      fmt.Println(err.Error())
+      fmt.Println("===========================================")
+      return user, fmt.Errorf("failed to execute insert query: %w", err)
+    }
+    return user, nil
+}
+
+func (r *PostgresUserRepository) GetUserByEmail(ctx context.Context, email string) (models.User, error) {
+    var user models.User
+
+    db, err := sql.Open("pgx", r.connString)
+    fmt.Println("In get user by email======================")
+    fmt.Println(r.connString)
+    fmt.Println("====================================")
+    if err != nil {
+      return user, fmt.Errorf("failed to open database: %w", err)
+    }
+    defer db.Close() // Ensure the connection pool is closed when the function exits
+
+    selectSql := "SELECT * from users where email=$1";
+
+    err = db.QueryRowContext(ctx, selectSql, email).Scan(
+      &user.ID,
+      &user.Username,
+      &user.Email,
+      &user.Password,
+      &user.IsAdmin,
+    )
+    if err != nil {
+      fmt.Println("===========================================")
+      fmt.Println("Query error")
+      fmt.Println(err.Error())
+      fmt.Println("===========================================")
+      return user, fmt.Errorf("failed to execute insert query: %w", err)
+    }
+    return user, nil
+}

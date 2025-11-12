@@ -10,9 +10,9 @@ import
   "github.com/joho/godotenv"
   "github.com/labstack/echo/v4"
   "github.com/labstack/echo/v4/middleware"
+  "github.com/go-playground/validator/v10"
 
   "codeberg.org/noreng-br/handler"
-  "codeberg.org/noreng-br/models"
   "codeberg.org/noreng-br/repository"
   "codeberg.org/noreng-br/service"
 )
@@ -43,7 +43,7 @@ func start() {
 	sslmode := os.Getenv("POSTGRES_SSL")
 
 	// Construct the URI connection string
-	connStr := fmt.Sprintf(
+	connStr = fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=%s",
 		user,
 		password,
@@ -57,39 +57,32 @@ func start() {
 
   fmt.Println(connStr, ctx)
   fmt.Println("THis will be an incredible application")
+
+
+  jwtSecret := os.Getenv("JWT_SECRET")
+  fmt.Println("================")
+  fmt.Println(jwtSecret)
+  fmt.Println("================")
 }
 
 func main() {
+  e := echo.New()
+  e.Validator = &CustomValidator{validator: validator.New()}
   start()
+
   rep, err := repository.NewRepositories(repository.Postgres, connStr)
   if err != nil {
     fmt.Println("An error ocurred when attempting to load repository")
   }
-  fmt.Println(rep)
   s, err := service.NewService(*rep)
   if err != nil {
     fmt.Println("An error ocurred when attempting to load service")
   }
-  fmt.Println(s)
-  value, err := s.CreateUser(ctx, models.User{
-    Username: "batata",
-    Email: "batata@bat.com.br",
-    Password: "banana",
-    IsAdmin: false ,
-  })
-  if err != nil {
-    log.Println("===================================")
-    log.Println(value)
-    log.Println("===================================")
-  }
-  fmt.Println(value)
-  fmt.Println(models.User{})
 
   h, err := handler.NewHandler(*s)
   if err != nil {
     fmt.Println("error in handler")
   }
-  e := echo.New()
 
 	// Global Middleware
 	e.Use(middleware.Logger())

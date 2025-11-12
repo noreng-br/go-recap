@@ -4,6 +4,7 @@ package handler
 import (
   "fmt"
 	"net/http"
+
 	"github.com/labstack/echo/v4"
 
   "codeberg.org/noreng-br/service"
@@ -40,7 +41,19 @@ func (h *Handler) CreateUser(c echo.Context) error {
     return echo.NewHTTPError(http.StatusBadRequest, "Invalid Request Data")
   }
 
-  usr, err := h.Service.CreateUser(c.Context().Get(), *u)
+  if err := c.Validate(u); err != nil {
+      // Returns a 400 Bad Request with validation errors
+      return err 
+  }
+
+  // do not let user create admin through the register route
+  u.IsAdmin = false
+
+  fmt.Println("=============================In Handler=====================+++++")
+  fmt.Println(u)
+  fmt.Println("============================================================+++++")
+
+  usr, err := h.Service.CreateUser(c.Request().Context(), *u)
   if err != nil {
     fmt.Println("=============================")
     fmt.Println(usr)

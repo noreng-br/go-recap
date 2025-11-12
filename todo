@@ -1,2 +1,11 @@
-[ ] Registro de usuário
-[ ] Login
+12/11
+
+[ok] Registro de usuário
+[ok] Login
+
+=======================================
+
+13/11
+
+[ ] Migrations for products, categories and orders (SQL)
+[ ] Add endpoint for list users, insert products and categories as admin
