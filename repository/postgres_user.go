@@ -21,6 +21,9 @@ func NewPostgresUserRepository(connString string) *PostgresUserRepository {
 // Create implements the CategoryRepository interface
 func (r *PostgresUserRepository) CreateUser(ctx context.Context, user models.User) (models.User, error) {
     db, err := sql.Open("pgx", r.connString)
+    fmt.Println("In createUser======================")
+    fmt.Println(r.connString)
+    fmt.Println("====================================")
     if err != nil {
       return user, fmt.Errorf("failed to open database: %w", err)
     }

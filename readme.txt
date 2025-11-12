@@ -4,3 +4,9 @@ ______________
 ```
 cp .env.test .env
 ```
+
+Run migrations:
+
+```
+./scripts/migrations/run up
+```

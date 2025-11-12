@@ -3,22 +3,32 @@ package main
 import 
 (
   "fmt"
-  "time"
   "os"
   "log"
   "context"
 
   "github.com/joho/godotenv"
+  "github.com/labstack/echo/v4"
+  "github.com/labstack/echo/v4/middleware"
 
+  "codeberg.org/noreng-br/handler"
   "codeberg.org/noreng-br/models"
   "codeberg.org/noreng-br/repository"
   "codeberg.org/noreng-br/service"
 )
 
-func main() {
+var connStr string
+var ctx context.Context
 
+func start() {
+  fmt.Println("=======================================================")
+  fmt.Println("=======================================================")
+  fmt.Println("=======================================================")
+  fmt.Println("=====================INIT========================")
+  fmt.Println("=======================================================")
+  fmt.Println("=======================================================")
+  fmt.Println("=======================================================")
   // load env
-
   err := godotenv.Load()
   if err != nil {
     log.Fatalf("Error loading .env file: %v", err)
@@ -43,34 +53,51 @@ func main() {
 		sslmode,
 	)
 
-  ctx := context.Background()
+  ctx = context.Background()
 
-  for {
-    fmt.Println("hi")
-    fmt.Println("THis will be an incredible application")
-    rep, err := repository.NewRepositories(repository.Postgres, connStr)
-    if err != nil {
-      fmt.Println("An error ocurred when attempting to load repository")
-    }
-    fmt.Println(rep)
-    s, err := service.NewService(*rep)
-    if err != nil {
-      fmt.Println("An error ocurred when attempting to load service")
-    }
-    fmt.Println(s)
-    value, err := s.CreateUser(ctx, models.User{
-      Username: "batata",
-      Email: "batata@bat.com.br",
-      Password: "banana",
-      IsAdmin: false ,
-    })
-    if err != nil {
-      log.Println("===================================")
-      log.Println(value)
-      log.Println("===================================")
-    }
-    fmt.Println(value)
-    time.Sleep(1 * time.Second)
-    fmt.Println(models.User{})
+  fmt.Println(connStr, ctx)
+  fmt.Println("THis will be an incredible application")
+}
+
+func main() {
+  start()
+  rep, err := repository.NewRepositories(repository.Postgres, connStr)
+  if err != nil {
+    fmt.Println("An error ocurred when attempting to load repository")
   }
+  fmt.Println(rep)
+  s, err := service.NewService(*rep)
+  if err != nil {
+    fmt.Println("An error ocurred when attempting to load service")
+  }
+  fmt.Println(s)
+  value, err := s.CreateUser(ctx, models.User{
+    Username: "batata",
+    Email: "batata@bat.com.br",
+    Password: "banana",
+    IsAdmin: false ,
+  })
+  if err != nil {
+    log.Println("===================================")
+    log.Println(value)
+    log.Println("===================================")
+  }
+  fmt.Println(value)
+  fmt.Println(models.User{})
+
+  h, err := handler.NewHandler(*s)
+  if err != nil {
+    fmt.Println("error in handler")
+  }
+  e := echo.New()
+
+	// Global Middleware
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+
+	// Initialize and register all routes from the 'handler' package
+	handler.InitRoutes(e, h)
+
+	// Start server
+	e.Logger.Fatal(e.Start(":8080"))
 }
