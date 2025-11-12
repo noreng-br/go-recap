@@ -7,5 +7,6 @@
 
 13/11
 
-[ ] Migrations for products, categories and orders (SQL)
+[ok] Migrations for products, categories and orders (SQL)
+  [ok] Migration 7 add description field to the product table
 [ ] Add endpoint for list users, insert products and categories as admin
