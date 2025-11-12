@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  app:
+    # Build the image using the Dockerfile in the current directory
+    build:
+      context: .
+      dockerfile: Dockerfile
+    
+    # Mount the current local directory (.) to /app inside the container.
+    # This is CRITICAL for Air to see your local file changes!
+    volumes:
+      - .:/app
+      # Optional: This volume hides the 'tmp' directory from the host OS 
+      # and prevents permission issues or excessive host file watching.
+      - /app/tmp 
+    
+    # Map the container port (e.g., 8080) to the host machine port (e.g., 8080)
+    ports:
+      - "8080:8080"
+      
+    # Use a specific container name for easy reference (optional)
+    container_name: go-live-reload-app
+  postgres_db:
+    image: postgres:14-alpine
+    container_name: postgres_db
+    restart: always
+    environment:
+      # Database user and password
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      # Name of the database to create
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      # Host:Container port mapping
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      # Persist data in a named volume
+      - postgres_data:/var/lib/postgresql/data
+
+  # --- MongoDB Service ---
+  mongo_db:
+    image: mongo:latest
+    container_name: mongo_db
+    restart: always
+    environment:
+      # MongoDB root user and password
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      # Optional: Name of a database to create on startup
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+    ports:
+      # Host:Container port mapping
+      - "${MONGO_DB_PORT}:27017"
+    volumes:
+      # Persist data in a named volume
+      - mongo_data:/data/db
+
+volumes:
+  # Named volumes for data persistence
+  postgres_data:
+  mongo_data:

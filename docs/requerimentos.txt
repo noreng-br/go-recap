@@ -1,0 +1,47 @@
+Documentação
+------------
+
+Quais funcionalidades a aplicação terá:
+
+Modo administrador:
+  (
+  -> Permite a inserção de produtos
+  -> Permite a vinculação de categorias aos produtos
+  -> permite modificar produtos
+  -> Visualiza todos os pedidos
+  -> Listar todos os usuários
+  ) <- Admin apenas
+
+Modo usuário comum
+  (
+  -> Visualizar produtos
+  -> Visualizar detalhe de produto
+  -> Criação de usuário
+  ) <- Sem autenticação
+
+  (
+  -> Logar com usuário
+  -> Comprar um produto
+  -> Visualizar seus pedidos
+  ) <- Com autenticação
+
+Quais são as entidades e atributos
+----------------------------------
+
+  User: 
+
+  Category: name
+
+  Order: deliver_date, ordered_date, 
+
+  Product: price, category
+
+
+Admin
+-----
+  -> Criação através de script auxiliar (apenas)
+
+Conceitos Trabalhados
+---------------------
+  -> Login com diferentes níveis de permissão ao usuário
+

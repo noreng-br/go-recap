@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# --- Configuration ---
+SERVICE_NAME="postgres_db"
+DB_USER="user"
+DB_NAME="my_postgres_db"
+MIGRATION_PATH="./migrations/postgres"
+# ---------------------
+
+# 1. Parameter Validation
+DIRECTION=$1
+if [ "$DIRECTION" != "up" ] && [ "$DIRECTION" != "down" ]; then
+    echo "ERROR: Specify 'up' or 'down'. Usage: $0 [up|down]"; exit 1;
+fi
+
+echo "Starting migration process: $DIRECTION..."
+
+# 2. Check Service Status
+if ! docker compose ps --services | grep -wq "$SERVICE_NAME"; then
+    echo "ERROR: Docker Compose service '$SERVICE_NAME' is not running."; exit 1;
+fi
+
+# 3. Determine Sorting
+FILE_PATTERN="${MIGRATION_PATH}/*_${DIRECTION}.sql"
+SORT_FLAG="-v" 
+
+if [ "$DIRECTION" == "down" ]; then
+    SORT_FLAG="-vr"
+    echo "Applying DOWN migrations in reverse order."
+fi
+
+# 4. Get the list of migration files
+MIGRATION_FILES=$(ls $SORT_FLAG $FILE_PATTERN 2>/dev/null)
+
+if [ -z "$MIGRATION_FILES" ]; then
+    echo "No ${DIRECTION} migration files found in ${MIGRATION_PATH}."; exit 0;
+fi
+
+# 5. Iterate and execute each file
+for FILE in $MIGRATION_FILES; do
+    echo "--- Applying ${DIRECTION} migration: ${FILE} ---"
+
+    # CRITICAL: Use input redirection (<) for clean stream and -i -T for execution
+    # Ensure your SQL files use BEGIN;...COMMIT;
+    MIGRATION_STATUS=$(
+        docker compose exec -i -T "$SERVICE_NAME" sh -c "psql -U $DB_USER -d $DB_NAME -v ON_ERROR_STOP=1 < /dev/stdin && echo \$? || echo \$?" < "$FILE"
+    )
+
+    CLEAN_STATUS=$(echo "$MIGRATION_STATUS" | tail -n 1 | tr -d '\r\n')
+
+    # 6. Check the exit status
+    if [ "$CLEAN_STATUS" -ne 0 ]; then
+        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        echo "!!! ERROR: Migration FAILED during execution of ${FILE} (Status: ${CLEAN_STATUS}) !!!"
+        echo "!!! Execution aborted. Please verify SQL and permissions. !!!"
+        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        exit 1
+    else
+        echo "SUCCESS: Migration ${FILE} applied."
+        
+        # 7. PATCH: Add a small pause after a successful DDL change
+        # This addresses race conditions where the second connection fails to see the first's commit immediately.
+        if [ "$DIRECTION" == "up" ]; then
+            echo "Waiting 0.5 seconds for DDL commit visibility..."
+            sleep 0.5
+        fi
+    fi
+done
+
+echo "-------------------------------------"
+echo "All ${DIRECTION} migrations applied successfully."
