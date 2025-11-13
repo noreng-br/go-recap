@@ -42,3 +42,73 @@ func (r *PostgresProductRepository) CreateProduct(ctx context.Context, product m
 
   return product, nil
 }
+
+func (r *PostgresProductRepository) GetProducts(ctx context.Context) ([]models.Product, error) {
+  var products []models.Product
+
+  db, err := sql.Open("pgx", r.connString)
+  fmt.Println("In get products========================")
+  if err != nil {
+    return products, fmt.Errorf("failed to open database: %w", err)
+  }
+
+  defer db.Close()
+
+  selectSql := "SELECT * from products";
+
+  rows, err := db.Query(selectSql)
+  if err != nil {
+    fmt.Println("=====================================================")
+    fmt.Println("Query error")
+    fmt.Println(err.Error())
+    fmt.Println("=====================================================")
+    return products, fmt.Errorf("failed to execute select query: %w", err)
+  }
+
+  for rows.Next() {
+    var product models.Product
+
+    rows.Scan(
+        &product.ProductID,
+        &product.Name,
+        &product.Description,
+        &product.Price,
+    )
+
+    products = append(products, product)
+  }
+
+  // later on we need to get the categories given the product id
+
+  return products, nil
+}
+
+func (r *PostgresProductRepository) GetProductById(ctx context.Context, productId string) (models.Product, error) {
+  var product models.Product
+  db, err := sql.Open("pgx", r.connString)
+  fmt.Println("In Get product by Id =================================")
+  fmt.Println("=============================================")
+  if err != nil {
+    return product, fmt.Errorf("failed to open database: %w", err)
+  }
+
+  defer db.Close()
+
+  selectSql := "SELECT * from products where product_id=$1";
+
+  err = db.QueryRowContext(ctx, selectSql, productId).Scan(
+    &product.ProductID,
+    &product.Name,
+    &product.Description,
+    &product.Price,
+  )
+  if err != nil {
+    fmt.Println("==============================================")
+    fmt.Println("Query error")
+    fmt.Println(err.Error())
+    fmt.Println("==============================================")
+    return product, fmt.Errorf("failed to execute select query: %w", err)
+  }
+
+  return product, nil
+}

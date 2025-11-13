@@ -33,3 +33,27 @@ func (h *Handler) CreateProduct(c echo.Context) error {
 
   return c.JSON(http.StatusCreated, product)
 }
+
+
+func (h *Handler) GetProducts(c echo.Context) error {
+  ctx := c.Request().Context()
+
+  products, err := h.Service.Repository.ProductRepo.GetProducts(ctx)
+  if err != nil {
+    return c.String(http.StatusInternalServerError, "internal error")
+  }
+
+  return c.JSON(http.StatusOK, products)
+}
+
+func (h *Handler) GetProduct(c echo.Context) error {
+  ctx := c.Request().Context()
+  idx := c.QueryParam("id")
+
+  product, err := h.Service.Repository.ProductRepo.GetProductById(ctx, idx)
+  if err != nil {
+    return c.String(http.StatusInternalServerError, "internal error")
+  }
+
+  return c.JSON(http.StatusOK, product)
+}

@@ -62,6 +62,8 @@ func InitRoutes(e *echo.Echo, h *Handler) {
 	// they can be called directly without any prefix.
 	api.POST("/auth", h.Login)
 	api.POST("/users", h.CreateUser)
+  api.GET("/product", h.GetProducts)
+  api.GET("/product", h.GetProduct)
 
   // 2. Restricted Group
   r := e.Group("/api/user")

@@ -21,8 +21,8 @@
 [ ] Implement junction of category to products (admin)
 [ ] Implement update of product (admin)
 [ ] Delete of categories (admin)
-[ ] Get single products (open)
-[ ] Get all products (open)
+[ok] Get single products (open)
+[ok] Get all products (open)
 
 =======================================
 
@@ -35,6 +35,8 @@
 
 =======================================
 
-16/11
+Improvements
+------------
 
 [ ] Minor fixes: Fields validation in register
+[ ] Apply pagination in listing of resources

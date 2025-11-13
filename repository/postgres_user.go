@@ -72,7 +72,7 @@ func (r *PostgresUserRepository) GetUserByUsername(ctx context.Context, username
       fmt.Println("Query error")
       fmt.Println(err.Error())
       fmt.Println("===========================================")
-      return user, fmt.Errorf("failed to execute insert query: %w", err)
+      return user, fmt.Errorf("failed to execute select query: %w", err)
     }
     return user, nil
 }
@@ -103,7 +103,7 @@ func (r *PostgresUserRepository) GetUserByEmail(ctx context.Context, email strin
       fmt.Println("Query error")
       fmt.Println(err.Error())
       fmt.Println("===========================================")
-      return user, fmt.Errorf("failed to execute insert query: %w", err)
+      return user, fmt.Errorf("failed to execute select query: %w", err)
     }
     return user, nil
 }
