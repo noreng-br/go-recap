@@ -7,6 +7,7 @@ Modo administrador:
   (
   -> Permite a inserção de produtos
   -> Permite a vinculação de categorias aos produtos
+  -> Permite adicionar categorias
   -> permite modificar produtos
   -> Visualiza todos os pedidos
   -> Listar todos os usuários

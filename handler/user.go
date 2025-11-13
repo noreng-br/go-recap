@@ -24,8 +24,12 @@ func NewHandler(s service.Service) (*Handler, error) {
 // GetUsers handles GET /api/v1/users
 func (h *Handler) GetUsers(c echo.Context) error {
 	// Simple JSON response example
-	users := []string{"Alice", "Bob", "Charlie"}
-	return c.JSON(http.StatusOK, users)
+  users, err := h.Service.Repository.UserRepo.GetUsers(c.Request().Context())
+  if err != nil {
+      c.String(http.StatusInternalServerError, "Error listing users")
+  }
+
+  return c.JSON(http.StatusOK, users)
 }
 
 // GetUserByID handles GET /api/v1/users/:id

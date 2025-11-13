@@ -107,3 +107,43 @@ func (r *PostgresUserRepository) GetUserByEmail(ctx context.Context, email strin
     }
     return user, nil
 }
+
+func (r *PostgresUserRepository) GetUsers(ctx context.Context) ([]models.User, error) {
+    var users []models.User
+
+    db, err := sql.Open("pgx", r.connString)
+    fmt.Println("In get user by username======================")
+    fmt.Println(r.connString)
+    fmt.Println("====================================")
+    if err != nil {
+      return users, fmt.Errorf("failed to open database: %w", err)
+    }
+    defer db.Close() // Ensure the connection pool is closed when the function exits
+
+    selectSql := "SELECT * from users";
+
+    rows, err := db.Query(selectSql)
+    if err != nil {
+      fmt.Println("===========================================")
+      fmt.Println("Query error")
+      fmt.Println(err.Error())
+      fmt.Println("===========================================")
+      return users, fmt.Errorf("failed to execute select query: %w", err)
+    }
+
+    for rows.Next() {
+      var user models.User
+
+      rows.Scan(
+        &user.ID,
+        &user.Username,
+        &user.Email,
+        &user.Password,
+        &user.IsAdmin,
+      )
+
+      users = append(users, user)
+    }
+
+    return users, nil
+}
