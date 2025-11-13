@@ -55,13 +55,13 @@ func restricted(c echo.Context) error {
 // InitRoutes sets up all API routes on the provided Echo instance.
 func InitRoutes(e *echo.Echo, h *Handler) {
 	// Group routes under a common prefix, like /v1
-	v1 := e.Group("/api")
+	api := e.Group("/api")
 
 	// --- User Routes ---
 	// Since GetUsers and GetUserByID are in the same package (handler),
 	// they can be called directly without any prefix.
-	v1.POST("/auth", h.Login)
-	v1.POST("/users", h.CreateUser)
+	api.POST("/auth", h.Login)
+	api.POST("/users", h.CreateUser)
 
   // 2. Restricted Group
   r := e.Group("/api/user")
@@ -90,4 +90,6 @@ func InitRoutes(e *echo.Echo, h *Handler) {
   adminGroup.Use(AdminOnly)
 
 	adminGroup.GET("/users", h.GetUsers)
+  adminGroup.POST("/product", h.CreateProduct)
+  adminGroup.POST("/category", h.CreateCategory)
 }

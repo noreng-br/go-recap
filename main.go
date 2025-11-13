@@ -54,15 +54,6 @@ func start() {
 	)
 
   ctx = context.Background()
-
-  fmt.Println(connStr, ctx)
-  fmt.Println("THis will be an incredible application")
-
-
-  jwtSecret := os.Getenv("JWT_SECRET")
-  fmt.Println("================")
-  fmt.Println(jwtSecret)
-  fmt.Println("================")
 }
 
 func main() {

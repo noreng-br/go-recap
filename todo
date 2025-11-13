@@ -9,4 +9,32 @@
 
 [ok] Migrations for products, categories and orders (SQL)
   [ok] Migration 7 add description field to the product table
-[ ] Add endpoint for list users, insert products and categories as admin
+[ok] Add endpoint for list users, insert products and categories as admin
+  [  ] List users
+  [ok] Endpoint for insertion of products (admin)
+  [ok] Endpoint for insertion of categories (admin)
+
+=======================================
+
+14/11
+
+[ ] Implement junction of category to products (admin)
+[ ] Implement update of product (admin)
+[ ] Delete of categories (admin)
+[ ] Get single products (open)
+[ ] Get all products (open)
+
+=======================================
+
+15/11
+
+[ ] Create order (user/authenticated)
+[ ] Visualiza user orders (user/authenticated)
+[ ] View all orders (admin)
+[ ] Script de inserção de admin
+
+=======================================
+
+16/11
+
+[ ] Minor fixes: Fields validation in register

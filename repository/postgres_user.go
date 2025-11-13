@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
   "database/sql"
-  "codeberg.org/noreng-br/models"
+
   _ "github.com/jackc/pgx/v5/stdlib"
+
+  "codeberg.org/noreng-br/models"
 )
 
 type PostgresUserRepository struct {

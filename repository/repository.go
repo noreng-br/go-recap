@@ -15,6 +15,8 @@ const (
 // Repositories holds all the entity-specific repositories
 type Repositories struct {
 	UserRepo     UserRepository
+  ProductRepo  ProductRepository
+  CategoryRepo CategoryRepository
 }
 
 func NewRepositories(dbType DBType, connString string) (*Repositories, error) {
@@ -24,6 +26,8 @@ func NewRepositories(dbType DBType, connString string) (*Repositories, error) {
 		fmt.Printf("Initializing PostgreSQL Repositories...\n")
 		return &Repositories{
 			UserRepo:     NewPostgresUserRepository(connString),
+      ProductRepo:  NewPostgresProductRepository(connString),
+      CategoryRepo: NewPostgresCategoryRepository(connString),
 		}, nil
 	case MongoDB:
 		// Initialize ALL MongoDB concrete implementations
