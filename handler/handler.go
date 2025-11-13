@@ -94,4 +94,5 @@ func InitRoutes(e *echo.Echo, h *Handler) {
 	adminGroup.GET("/users", h.GetUsers)
   adminGroup.POST("/product", h.CreateProduct)
   adminGroup.POST("/category", h.CreateCategory)
+  adminGroup.PATCH("/product-categories", h.AddProductCategories)
 }

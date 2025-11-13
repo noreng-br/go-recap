@@ -18,7 +18,7 @@
 
 14/11
 
-[ ] Implement junction of category to products (admin)
+[ok] Implement junction of category to products (admin)
 [ ] Implement update of product (admin)
 [ ] Delete of categories (admin)
 [ok] Get single products (open)
@@ -28,6 +28,7 @@
 
 15/11
 
+[ ] Delete of product
 [ ] Create order (user/authenticated)
 [ ] Visualiza user orders (user/authenticated)
 [ ] View all orders (admin)

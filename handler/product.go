@@ -57,3 +57,24 @@ func (h *Handler) GetProduct(c echo.Context) error {
 
   return c.JSON(http.StatusOK, product)
 }
+
+func (h *Handler) AddProductCategories(c echo.Context) error {
+  pCatDto := new(models.ProductCategoryDTO)
+  if err := c.Bind(pCatDto); err != nil {
+    return c.String(http.StatusBadRequest, "Invalid json format")
+  }
+
+  // empty array for category
+  if len(pCatDto.CategoryIDs) == 0 {
+    return c.String(http.StatusBadRequest, "Categories required")
+  }
+
+  ctx := c.Request().Context()
+
+  err := h.Service.Repository.ProductRepo.AddCategoriesToProduct(ctx, pCatDto.ProductID, pCatDto.CategoryIDs)
+  if err !=  nil {
+    return c.String(http.StatusInternalServerError, "Internal server error")
+  }
+
+  return c.String(http.StatusOK, "Categories of the product have been updated")
+}

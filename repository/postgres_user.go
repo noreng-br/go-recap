@@ -147,3 +147,4 @@ func (r *PostgresUserRepository) GetUsers(ctx context.Context) ([]models.User, e
 
     return users, nil
 }
+
