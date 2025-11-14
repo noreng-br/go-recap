@@ -260,3 +260,24 @@ func (r *PostgresProductRepository) GetCategoriesByProductID(ctx context.Context
     
     return categories, rows.Err()
 }
+
+func (r *PostgresProductRepository) DeleteProduct(ctx context.Context, productId string) ( error) {
+  fmt.Println(ctx)
+  db, err := sql.Open("pgx", r.connString)
+  fmt.Println("In Delete Product======================")
+  fmt.Println(r.connString)
+  fmt.Println("====================================")
+  if err != nil {
+    fmt.Errorf("failed to open database: %w", err)
+  }
+  defer db.Close() // Ensure the connection pool is closed when the function exits
+
+  deleteSql := "DELETE FROM products where product_id=$1"
+
+  _, err = db.Query(deleteSql, productId)
+  if err != nil {
+    return fmt.Errorf("failed to execute delete query: %w", err)
+  }
+
+  return nil
+}

@@ -13,4 +13,5 @@ type ProductRepository interface {
   AddCategoriesToProduct(ctx context.Context, productID int, categoryIDs []int) error
   GetCategoriesByProductID(ctx context.Context, productID int) ([]models.Category, error)
   UpdateProduct(ctx context.Context, productId string, product models.Product) (models.Product, error)
+  DeleteProduct(ctx context.Context, productId string) ( error)
 }

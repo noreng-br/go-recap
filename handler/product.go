@@ -107,3 +107,15 @@ func (h *Handler) UpdateProduct(c echo.Context) error {
 
   return c.JSON(http.StatusCreated, product)
 }
+
+func (h *Handler) DeleteProduct(c echo.Context) error {
+  ctx := c.Request().Context()
+  idx := c.QueryParam("id")
+
+  err := h.Service.Repository.ProductRepo.DeleteProduct(ctx, idx)
+  if err != nil {
+    return c.String(http.StatusInternalServerError, "internal error")
+  }
+
+  return c.JSON(http.StatusOK, "successfully deleted product")
+}

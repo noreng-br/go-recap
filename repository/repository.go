@@ -17,6 +17,7 @@ type Repositories struct {
 	UserRepo     UserRepository
   ProductRepo  ProductRepository
   CategoryRepo CategoryRepository
+  OrderRepo OrderRepository
 }
 
 func NewRepositories(dbType DBType, connString string) (*Repositories, error) {
@@ -28,6 +29,7 @@ func NewRepositories(dbType DBType, connString string) (*Repositories, error) {
 			UserRepo:     NewPostgresUserRepository(connString),
       ProductRepo:  NewPostgresProductRepository(connString),
       CategoryRepo: NewPostgresCategoryRepository(connString),
+      OrderRepo: NewPostgresOrderRepository(connString),
 		}, nil
 	case MongoDB:
 		// Initialize ALL MongoDB concrete implementations

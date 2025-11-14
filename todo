@@ -8,7 +8,7 @@
 13/11
 
 [ok] Migrations for products, categories and orders (SQL)
-  [ok] Migration 7 add description field to the product table
+[ok] Migration 7 add description field to the product table
 [ok] Add endpoint for list users, insert products and categories as admin
   [ok] List users
   [ok] Endpoint for insertion of products (admin)
@@ -29,10 +29,10 @@
 
 15/11
 
-[ ] Delete of product
-[ ] Create order (user/authenticated)
-[ ] Visualiza user orders (user/authenticated)
-[ ] View all orders (admin)
+[ok] Delete of product
+[ok] Create order (user/authenticated)
+[ok] Visualize user orders (user/authenticated)
+[ok] View all orders (admin)
 [ ] Script de inserção de admin
 
 =======================================
@@ -40,5 +40,11 @@
 Improvements
 ------------
 
-[ ] Minor fixes: Fields validation in register
-[ ] Apply pagination in listing of resources
+-> Minor fixes: Fields validation in register
+-> Apply pagination in listing of resources
+-> Add integration tests
+-> Handle mongodb nosql usage
+-> Add coverage to service layer
+-> Utils package to handle validation and other
+3rd related functionalities like password hashing
+-> Improve performance, some queries might be slow

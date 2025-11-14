@@ -85,7 +85,8 @@ func InitRoutes(e *echo.Echo, h *Handler) {
   r.Use(jwtMiddleware)
   
   // Protected route
-  r.POST("/order", restricted)
+  r.POST("/order", h.CreateOrder)
+  r.GET("/orders", h.GetUserOrders)
 
   adminGroup := e.Group("/api/admin")
   adminGroup.Use(jwtMiddleware) // First, validate the token
@@ -94,9 +95,11 @@ func InitRoutes(e *echo.Echo, h *Handler) {
   /*Only Admin can perform*/
 	adminGroup.GET("/users", h.GetUsers)
   adminGroup.POST("/product", h.CreateProduct)
+  adminGroup.DELETE("/product", h.DeleteProduct)
   adminGroup.POST("/category", h.CreateCategory)
   adminGroup.PATCH("/product-categories", h.AddProductCategories)
   adminGroup.PUT("/product", h.UpdateProduct)
   adminGroup.GET("/categories", h.GetCategories)
   adminGroup.DELETE("/category", h.DeleteCategory)
+  adminGroup.GET("/orders", h.GetAllOrders)
 }
