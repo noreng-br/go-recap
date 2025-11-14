@@ -62,7 +62,7 @@ func InitRoutes(e *echo.Echo, h *Handler) {
 	// they can be called directly without any prefix.
 	api.POST("/auth", h.Login)
 	api.POST("/users", h.CreateUser)
-  api.GET("/product", h.GetProducts)
+  api.GET("/products", h.GetProducts)
   api.GET("/product", h.GetProduct)
 
   // 2. Restricted Group
@@ -91,8 +91,12 @@ func InitRoutes(e *echo.Echo, h *Handler) {
   adminGroup.Use(jwtMiddleware) // First, validate the token
   adminGroup.Use(AdminOnly)
 
+  /*Only Admin can perform*/
 	adminGroup.GET("/users", h.GetUsers)
   adminGroup.POST("/product", h.CreateProduct)
   adminGroup.POST("/category", h.CreateCategory)
   adminGroup.PATCH("/product-categories", h.AddProductCategories)
+  adminGroup.PUT("/product", h.UpdateProduct)
+  adminGroup.GET("/categories", h.GetCategories)
+  adminGroup.DELETE("/category", h.DeleteCategory)
 }

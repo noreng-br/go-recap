@@ -78,3 +78,32 @@ func (h *Handler) AddProductCategories(c echo.Context) error {
 
   return c.String(http.StatusOK, "Categories of the product have been updated")
 }
+
+func (h *Handler) UpdateProduct(c echo.Context) error {
+  productDto := new(models.ProductDTO)
+  if err := c.Bind(productDto); err != nil {
+    return c.String(http.StatusBadRequest, "Invalid json format")
+  }
+
+  idx := c.QueryParam("id")
+  
+  var product models.Product 
+
+  product.Name = productDto.Name
+  product.Description = productDto.Description
+  product.Price = productDto.Price
+
+  product, err := h.Service.Repository.ProductRepo.UpdateProduct(
+    c.Request().Context(),
+    idx,
+    product,
+  )
+
+  if err != nil {
+    return c.String(http.StatusInternalServerError, "internal error")
+  }
+
+  log.Println("In update product handler")
+
+  return c.JSON(http.StatusCreated, product)
+}

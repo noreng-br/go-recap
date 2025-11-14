@@ -19,8 +19,9 @@
 14/11
 
 [ok] Implement junction of category to products (admin)
-[ ] Implement update of product (admin)
-[ ] Delete of categories (admin)
+[ok] Implement update of product (admin)
+[ok] Delete of categories (admin)
+[ok] Implement list of categories
 [ok] Get single products (open)
 [ok] Get all products (open)
 

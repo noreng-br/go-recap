@@ -104,6 +104,37 @@ func (r *PostgresProductRepository) GetProducts(ctx context.Context) ([]models.P
   return products, nil
 }
 
+func (r *PostgresProductRepository) UpdateProduct(ctx context.Context, productId string, product models.Product) (models.Product, error) {
+  db, err := sql.Open("pgx", r.connString)
+  fmt.Println("In updateProduct======================")
+  fmt.Println(r.connString)
+  fmt.Println("====================================")
+  if err != nil {
+    return models.Product{}, fmt.Errorf("failed to open database: %w", err)
+  }
+  defer db.Close() // Ensure the connection pool is closed when the function exits
+
+  updateSql := `UPDATE products
+  SET name = $1, price = $2, description = $3
+  WHERE product_id = $4
+  `
+
+  // 3. Execute the query using QueryRow, passing the name and age as arguments ($1, $2).
+  // Scan the returned ID into the newUserID variable.
+  _, err = db.Query(
+      updateSql,
+      product.Name,
+      product.Description,
+      product.Price,
+      productId,
+  )
+  if err != nil {
+    return models.Product{}, fmt.Errorf("failed to execute insert query: %w", err)
+  }
+
+  return product, nil
+}
+
 func (r *PostgresProductRepository) GetProductById(ctx context.Context, productId string) (models.ProductWithCategories, error) {
   var product models.ProductWithCategories
   db, err := sql.Open("pgx", r.connString)

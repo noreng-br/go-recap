@@ -33,3 +33,27 @@ func (h *Handler) CreateCategory(c echo.Context) error {
 
   return c.JSON(http.StatusCreated, category)
 }
+
+
+func (h *Handler) GetCategories(c echo.Context) error {
+	// Simple JSON response example
+  categories, err := h.Service.Repository.CategoryRepo.ListCategories(c.Request().Context())
+  if err != nil {
+      c.String(http.StatusInternalServerError, "Error listing users")
+  }
+
+  return c.JSON(http.StatusOK, categories)
+}
+
+func (h *Handler) DeleteCategory(c echo.Context) error {
+  ctx := c.Request().Context()
+  idx := c.QueryParam("id")
+
+  err := h.Service.Repository.CategoryRepo.DeleteCategory(ctx, idx)
+  if err != nil {
+    return c.String(http.StatusInternalServerError, "internal error")
+  }
+
+  return c.String(http.StatusOK, "category was succesfully removed")
+}
+
