@@ -1,0 +1,92 @@
+#!/bin/bash
+
+# --- Configuration ---
+# Set your PostgreSQL connection string/variables
+DB_NAME="my_postgres_db"
+DB_USER="user"
+DB_CONTAINER="postgres_db" 
+
+# --- Function Definitions and Parameter Parsing ---
+
+usage() {
+    echo "Usage: $0 -u <username> -p <password> -e <email> [-a]"
+    echo ""
+    echo "Options:"
+    echo "  -u, --username  The new user's username (Required)."
+    echo "  -p, --password  The new user's password (Required)."
+    echo "  -e, --email     The new user's email address (Required)."
+    echo "  -a, --admin     Set the user as an administrator (Optional flag)."
+    echo "  -h, --help      Display this help message."
+    exit 1
+}
+
+USERNAME=""
+PASSWORD=""
+EMAIL=""
+IS_ADMIN="FALSE" 
+
+while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+        -u|--username) USERNAME="$2"; shift ;;
+        -p|--password) PASSWORD="$2"; shift ;;
+        -e|--email) EMAIL="$2"; shift ;;
+        -a|--admin) IS_ADMIN="TRUE" ;;
+        -h|--help) usage ;;
+        *) echo "Unknown parameter: $1"; usage ;;
+    esac
+    shift
+done
+
+if [ -z "$USERNAME" ] || [ -z "$PASSWORD" ] || [ -z "$EMAIL" ]; then
+    echo "Error: All required parameters (-u, -p, -e) must be provided."
+    usage
+fi
+
+# --------------------------------------------------------------------------
+# --- Database Insertion Logic ---
+# --------------------------------------------------------------------------
+
+echo "Attempting to insert user '$USERNAME' into database '$DB_NAME'..."
+echo "Admin Status: $IS_ADMIN"
+
+# Step 0: Ensure the pgcrypto extension is installed, suppressing the output.
+# This prevents 'CREATE EXTENSION' from being inserted into the password field.
+echo "Ensuring pgcrypto extension is present..."
+docker compose exec -i -T "$DB_CONTAINER" psql -d "$DB_NAME" -U "$DB_USER" -c \
+    "CREATE EXTENSION IF NOT EXISTS pgcrypto;" > /dev/null 2>&1
+
+# Step 1: Calculate the Hash and Store it in a Bash Variable
+# This block now ONLY calculates the hash.
+
+HASH_CALC_COMMAND="SELECT public.crypt('$PASSWORD', public.gen_salt('bf'::text, 8));"
+
+HASHED_PASSWORD=$(
+    # Execute the hashing command and pipe through tr to remove trailing whitespace/newlines
+    docker compose exec -i -T "$DB_CONTAINER" psql -d "$DB_NAME" -U "$DB_USER" -t -c "$HASH_CALC_COMMAND" | tr -d '\n\r '
+)
+
+# Critical check
+if [ -z "$HASHED_PASSWORD" ]; then
+    echo "❌ CRITICAL ERROR: Failed to calculate password hash. The hash output was empty."
+    exit 1
+fi
+
+# Step 2: Execute the final, clean INSERT command.
+# The SQL is passed via a here-document for stability.
+docker compose exec -i -T "$DB_CONTAINER" psql -d "$DB_NAME" -U "$DB_USER" -t \
+    -v u="'$USERNAME'" \
+    -v h="'$HASHED_PASSWORD'" \
+    -v e="'$EMAIL'" \
+    -v a="'$IS_ADMIN'" << EOF_INSERT
+INSERT INTO users (username, password_hash, email, is_admin) 
+VALUES (:u, :h, :e, :a);
+EOF_INSERT
+
+
+# 3. Check the exit status of psql
+if [ $? -eq 0 ]; then
+    echo "✅ Success: User '$USERNAME' created successfully. (Admin status: $IS_ADMIN)"
+else
+    echo "❌ Error: User insertion failed. Check psql output for details."
+    exit 1
+fi

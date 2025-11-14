@@ -33,7 +33,7 @@
 [ok] Create order (user/authenticated)
 [ok] Visualize user orders (user/authenticated)
 [ok] View all orders (admin)
-[ ] Script de inserção de admin
+[ok] Script de inserção de admin
 
 =======================================
 
